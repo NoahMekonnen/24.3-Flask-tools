@@ -12,7 +12,7 @@ debug = DebugToolbarExtension(app)
 def satisfaction_questions():
     return render_template('sat_survey.html' ,title = satisfaction_survey.title, instructions = satisfaction_survey.instructions)
     
-@app.route('/responses', methods=['POST'])
+@app.route('/responses')
 def start_responses():
     session['responses'] = []
     return redirect('/questions/0')
@@ -32,6 +32,7 @@ def give_question(n):
 def give_answers():
     answer = request.args['ans']
     session['responses'].append(answer)
+    session.modified = True
     print(session['responses'],"This is the /answer route")
     if len(session['responses']) < 4:
         print(len(session['responses']))
