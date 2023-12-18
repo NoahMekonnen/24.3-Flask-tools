@@ -8,19 +8,19 @@ app.config['SECRET_KEY'] = "Godalone1"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
+responses = []
+
 @app.route('/')
 def satisfaction_questions():
     return render_template('sat_survey.html' ,title = satisfaction_survey.title, instructions = satisfaction_survey.instructions)
     
-@app.route('/responses')
+@app.route('/responses', methods= ['POST'])
 def start_responses():
-    session['responses'] = []
     return redirect('/questions/0')
 
 @app.route("/questions/<int:n>")
 def give_question(n):
-    k = len(session['responses'])
-    print(session["responses"],"This is the questions/n route")
+    k = len(responses)
     if k == 4:
         return redirect("/thank_you")
     elif k != n:
@@ -31,12 +31,9 @@ def give_question(n):
 @app.route("/answer")
 def give_answers():
     answer = request.args['ans']
-    session['responses'].append(answer)
-    session.modified = True
-    print(session['responses'],"This is the /answer route")
-    if len(session['responses']) < 4:
-        print(len(session['responses']))
-        return redirect(f"/questions/{(len(session['responses']))%4}")
+    responses.append(answer)
+    if len(responses) < 4:
+        return redirect(f"/questions/{(len(responses))%4}")
     return redirect("/thank_you")
 
 @app.route("/thank_you")
